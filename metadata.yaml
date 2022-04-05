@@ -1,0 +1,57 @@
+# Document metadata. metadata.yaml is used by documenteer and other tools
+# to build the document and index it. It should be maintained alongside the
+# document in git and kept up to date.
+
+# The series identifier. E.g. SQR, DMTN, SMTN, LDM, LSE, etc.
+series: "SITCOMTN"
+
+# Document number, as a string. It should be three digits, padded with leading zeros
+serial_number: "035"
+
+# Serial number of the document. E.g. SQR-001
+# NOTE: this field is *planned* for deprecation
+doc_id: "SITCOMTN-035"
+
+# Title of the document, without the series/serial designation
+doc_title: "Checking The AuxTel Pointing Model"
+
+# Author names, ordered as a list. Each author name should be formatted as 'First Last'
+authors:
+  - "Johnny Esteves"
+
+# Current document revision date, YYYY-MM-DD
+# Only set this field if you need to manually fix the revision date;
+# the revision date is obtained from the HEAD Git commit otherwise.
+# last_revised: 'YYYY-MM-DD'
+
+# Version. Use semantic versioning, e.g., 1.0.0, including .dev, as necessary.
+# This version string should correspond to the git tag when the document is
+# published on Zenodo. If left commented out, the current Git branch is used
+# instead version: '1.0.0'
+
+# Digital Object Identifier (DOI). Uncomment if available.
+# Keep this DOI updated as new releases are pushed to Zenodo
+# doi: 10.5281/zenodo.#####
+
+# Copyright statement
+copyright: "2022, Association of Universities for Research in Astronomy, Inc. (AURA)"
+
+# Description. A short, 1-2 sentence statemement used by document indices.
+description: "The on sky pointing accuracy of the Auxiliary Telescope (AuxTel) is checked in this tech note. The world coordinate system (WCS) solution of the AuxTel images provides a pointing within 0.25 arcesc of the telescope. In this manner, we compare the WCS sky positing with the one reported on the boresight. We derived angular offset of these sky coordinates for images from Feb 2020 up to Mar 2022. And we report an overall pointing accuracy of 57 arcesec. Since the pointing model was edited monthly during most of this time period the pointing offset also changes significantly monthly. In the note you can find the pointing angular offset timeline and distribution, the elevation and azimuth offsets as a function of the elevation and a correlation plot with environmental conditions. "
+
+# Abstract, if available
+# abstract: >
+#           Write your paragraph
+#           here with multiple lines.
+#
+#           You can have multiple paragraphs too.
+
+# URL where this document is published by Read the Docs. e.g. http://sqr-001.lsst.codes
+url: "https://sitcomtn-035.lsst.io"
+
+# LSST Docushare URL, if authoritative versions of this are are stored there.
+# Leave as an empty string or comment out this key if there is no Docushare URL.
+docushare_url: ""
+
+# GitHub repo URL
+github_url: "https://github.com/lsst-sitcom/sitcomtn-035"
