@@ -10,12 +10,10 @@ Iin this tech note, the on sky pointing accuracy of the Auxiliary Telescope (Aux
 
 The notebook of this analysis can be found here: https://github.com/estevesjh/ComScratchStuff/tree/main/AuxTel/pointingTracking
 
-Last Revision: 2022-04-05
-
 .. note::
 
    **This technote is not yet published.**
-   Work in progress. To do: - polish text on the second section; add comments for each plot; add the link of the plot on the executive summary.
+   Work in progress. To do: - polish text on the second section; add comments for each plot; 
 
 ..  _Pointing-Model-Verification-Executive-Summary:
 
@@ -138,7 +136,11 @@ Pointing offset distribution from Feb 2020 up to Mar 2022.
     :name: pointing-timeline
     :target: ./_images/output_24_0.png
     :alt: Pointing Timeline
-   
+
+Elevation Offsets
+^^^^^^^^^^^^^^^^^^^^^^
+
+Elevation vs offset on Az/El shows that at the begining of the nights on 2022 there were an initial offset on the hexapod which was not corrected. 
 
 .. code:: ipython3
 
@@ -174,6 +176,13 @@ Pointing offset distribution from Feb 2020 up to Mar 2022.
 .. image:: /_static/output_35_0.png
     :alt: Elevation Offsets
 
+Correlation With Enviromental Properties
+^^^^^^^^^^^^^^^^^^^^^^
+
+Here we tryed to correlate the pointing offsets with some information of the metadata.
+This time there were no clear correlation with the enviroment properties. 
+Next time would be interesting to look for correlation with seeing and wind speed. 
+
 .. code:: ipython3
 
     # Compute the correlation matrix
@@ -208,13 +217,4 @@ Pointing offset distribution from Feb 2020 up to Mar 2022.
 .. image:: /_static/output_37_0.png
    :alt: Correlation Matrix
 
-.. We should took more data. Build new look up table for the hexapod. Then,
-.. rebuild the pointing model and check the new pointings. Everything above
-.. 70 deg elevation is extrapolation.
-
-.. Check with Patrick if there’s some data for the hexapod lookup table.
-
-
-.. Put there the main findings of this trend analysis.
-.. https://tstn-014.lsst.io/#change-record
 
