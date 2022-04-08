@@ -20,7 +20,7 @@ Last Revision: 2022-04-05
 ..  _Pointing-Model-Verification-Executive-Summary:
 
 Executive Summary
-============
+===========================
 
 **Goal**: check the pointing ability of the AuxTel telescope to slew to a given sky coordinate for the night runs from Feb 2020 up to Mar 2022.
 
@@ -33,16 +33,19 @@ The WCS solutions were taken from the DM Stack Pipeline images that passed the `
 
 - The pointing offset changes signficantly monthly with the changes on the pointing model. 
 
-- The best pointing model found on this analysis is the one from Oct 2021, note: The pointing model from Nov 2021 was not updated for the observations runs of Feb and Mar 2202.
+- The best pointing model found on this analysis is the one from Oct 2021 :ref:`see Figure <pointing-timeline>`, note: The pointing model from Nov 2021 was not updated for the observations runs of Feb and Mar 2202.
 
-- Looking into these months we found an initial offset on the AlAz of (-0.1, 0.5) arcmin on Feb 2022 which involved to be (-0.5, 0.) arcmin in Mar 2022.
+- Looking into these months we found an initial offset on the AzEl of ( 0.5, -0.1) arcmin on Feb 2022 which involved to be (0.0, -0.5) arcmin in Mar 2022.
  
 - Finally, we looked for correlations of the pointing offset with the some metadata properties, we didn't find any signficant correlation. 
+
+**Remarks**: On the next observation night run more data was taken to update the hexapod look-up-table (LUT). 
+The pointing offset precision should be improved considerably after that. 
 
 ..  _Pointing-Model-Verification-202203:
 
 AuxTel Pointing Verification 2022/03
-===============
+==============================
 
 In this notebook is shown how the data was acquired, the pointing precision timeline, AzEl offsets as a function of the elevation and a correlaiton matrix.
 
@@ -87,9 +90,12 @@ Each file corresponds to an outputed collection from the rapid analysis pipeline
     df = pd.concat([df0,df1,df2])
     df.DATE = pd.to_datetime(df.DATE)#.dt.date
 
-    
-Pointing Offset Precision Timeline
+Pointing Offset Precision
 ^^^^^^^^^^^^^^^^^^^^^^
+
+The overall precision considering all the night runs since Feb 2020 is about 1 arcmin. 
+But the pointing precision should have involved greatly since the begining, the pointing model methods are constantly updated to achieve a better precision.
+
 .. code:: ipython3
 
     df1['PNT_OFFSET'].hist(bins=mybins,label=f'Feb 2020 - Mar 2022',density=False,lw=4)
@@ -104,7 +110,14 @@ Pointing Offset Precision Timeline
     plt.tight_layout()
     plt.savefig(f'figures/rev_pointing_offset_distribution_{date}.png',facecolor='w',transparent=False,dpi=100)
 
-.. image:: _static/output_33_0.png
+.. image:: /_static/output_33_0.png
+   :alt: Pointing Distribution
+
+    
+Pointing Offset Precision Timeline
+^^^^^^^^^^^^^^^^^^^^^^
+
+Pointing offset distribution from Feb 2020 up to Mar 2022.
 
 .. code:: ipython3
 
@@ -121,7 +134,11 @@ Pointing Offset Precision Timeline
     fig.tight_layout()
     fig.savefig(f'figures/pointing_offset_monthly_{date}.png',facecolor='w',transparent=False,dpi=100)
 
-.. image:: _static/output_24_0.png
+.. image:: /_static/output_24_0.png
+    :name: pointing-timeline
+    :target: ./_images/output_24_0.png
+    :alt: Pointing Timeline
+   
 
 .. code:: ipython3
 
@@ -154,7 +171,8 @@ Pointing Offset Precision Timeline
     fig.suptitle('AuxTel Observation - from Sep 2021 to Mar 2022')
     fig.savefig(f'figures/elevation_offsets_Sep2021_Mar2022.png',facecolor='w',transparent=False,dpi=100)
 
-.. image:: _static/output_35_0.png
+.. image:: /_static/output_35_0.png
+    :alt: Elevation Offsets
 
 .. code:: ipython3
 
@@ -187,62 +205,16 @@ Pointing Offset Precision Timeline
     plt.title(f'AuxTel Pointing Investigation - {len(df1)} Fields \n Observation Runs From Feb 2020 up to Nov 2021',fontsize=16)
     plt.savefig(f'figures/rev_correlation_matrix_{date}.png',facecolor='w',transparent=False,dpi=100)
 
-.. image:: _static/output_37_0.png
+.. image:: /_static/output_37_0.png
+   :alt: Correlation Matrix
 
-We should took more data. Build new look up table for the hexapod. Then,
-rebuild the pointing model and check the new pointings. Everything above
-70 deg elevation is extrapolation.
+.. We should took more data. Build new look up table for the hexapod. Then,
+.. rebuild the pointing model and check the new pointings. Everything above
+.. 70 deg elevation is extrapolation.
 
-Check with Patrick if there’s some data for the hexapod lookup table.
-
-
-Put there the main findings of this trend analysis.
-https://tstn-014.lsst.io/#change-record
+.. Check with Patrick if there’s some data for the hexapod lookup table.
 
 
-.. ..  _Pointing-Model-Verification-202203-Data-Acquisition:
+.. Put there the main findings of this trend analysis.
+.. https://tstn-014.lsst.io/#change-record
 
-.. Data-Acquisition
-.. ============
-
-.. ..  _Pointing-Model-Verification-202203-Pointing-Offset-Timeline:
-
-.. Pointing-Offset-Timeline
-.. ============
-
-.. ..  _Pointing-Model-Verification-202203-Elevation-Offsets:
-
-.. Elevation-Offsets
-.. ============
-
-.. ..  _Pointing-Model-Verification-202203-Correlations:
-
-.. Correlations
-.. ============
-
-.. ..  _Pointing-Model-Verification-202203-Data-Acquisition:
-
-.. Data-Acquisition
-.. ============
-
-.. ..  _Pointing-Model-Verification-202203-Pointing-Offset-Timeline:
-
-.. Pointing-Offset-Timeline
-.. ============
-
-.. ..  _Pointing-Model-Verification-202203-Elevation-Offsets:
-
-.. Elevation-Offsets
-.. ============
-
-.. ..  _Pointing-Model-Verification-202203-Correlations:
-
-.. Correlations
-.. ============
-
-.. .. rubric:: References
-
-.. Make in-text citations with: :cite:`bibkey`.
-
-.. .. bibliography:: local.bib lsstbib/books.bib lsstbib/lsst.bib lsstbib/lsst-dm.bib lsstbib/refs.bib lsstbib/refs_ads.bib
-..    :style: lsst_aa
