@@ -1,41 +1,3 @@
-..
-  Technote content.
-
-  See https://developer.lsst.io/restructuredtext/style.html
-  for a guide to reStructuredText writing.
-
-  Do not put the title, authors or other metadata in this document;
-  those are automatically added.
-
-  Use the following syntax for sections:
-
-  Sections
-  ========
-
-  and
-
-  Subsections
-  -----------
-
-  and
-
-  Subsubsections
-  ^^^^^^^^^^^^^^
-
-  To add images, add the image file (png, svg or jpeg preferred) to the
-  _static/ directory. The reST syntax for adding the image is
-
-  .. figure:: /_static/filename.ext
-     :name: fig-label
-
-     Caption text.
-
-   Run: ``make html`` and ``open _build/html/index.html`` to preview your work.
-   See the README at https://github.com/lsst-sqre/lsst-technote-bootstrap or
-   this repo's README for more info.
-
-   Feel free to delete this instructional comment.
-
 :tocdepth: 1
 
 .. Please do not modify tocdepth; will be fixed when a new Sphinx theme is shipped.
@@ -44,18 +6,215 @@
 
 .. TODO: Delete the note below before merging new content to the main branch.
 
+Iin this tech note, the on sky pointing accuracy of the Auxiliary Telescope (AuxTel) images is checked. 
+
+The notebook of this analysis can be found here: https://github.com/estevesjh/ComScratchStuff/tree/main/AuxTel/pointingTracking
+
 .. note::
 
    **This technote is not yet published.**
+   Work in progress. To do: - polish text on the second section; add comments for each plot; 
 
-   The on sky pointing accuracy of the Auxiliary Telescope (AuxTel) is checked in this tech note. The world coordinate system (WCS) solution of the AuxTel images provides a pointing within 0.25 arcesc of the telescope. In this manner, we compare the WCS sky positing with the one reported on the boresight. We derived angular offset of these sky coordinates for images from Feb 2020 up to Mar 2022. And we report an overall pointing accuracy of 57 arcesec. Since the pointing model was edited monthly during most of this time period the pointing offset also changes significantly monthly. In the note you can find the pointing angular offset timeline and distribution, the elevation and azimuth offsets as a function of the elevation and a correlation plot with environmental conditions. 
+..  _Pointing-Model-Verification-Executive-Summary:
 
-.. Add content here.
-.. Do not include the document title (it's automatically added from metadata.yaml).
+Executive Summary
+===========================
 
-.. .. rubric:: References
+**Goal**: check the pointing ability of the AuxTel telescope to slew to a given sky coordinate for the night runs from Feb 2020 up to Mar 2022.
 
-.. Make in-text citations with: :cite:`bibkey`.
+**Method**: The pointing coordinate given by the boresight is compared to the world coordinate system (WCS) solution of the AuxTel images. 
+The WCS solutions were taken from the DM Stack Pipeline images that passed the `calibration task`, which provides a pointing accuracy within ~0.25 arcesc. 
 
-.. .. bibliography:: local.bib lsstbib/books.bib lsstbib/lsst.bib lsstbib/lsst-dm.bib lsstbib/refs.bib lsstbib/refs_ads.bib
-..    :style: lsst_aa
+**Main findings**:
+
+- Comparing the angular offset of the two sky coordiantes we report an overall pointing precision of 57arcsec. 
+
+- The pointing offset changes signficantly monthly with the changes on the pointing model. 
+
+- The best pointing model found on this analysis is the one from Oct 2021 :ref:`see Figure <pointing-timeline>`, note: The pointing model from Nov 2021 was not updated for the observations runs of Feb and Mar 2202.
+
+- Looking into these months we found an initial offset on the AzEl of ( 0.5, -0.1) arcmin on Feb 2022 which involved to be (0.0, -0.5) arcmin in Mar 2022.
+ 
+- Finally, we looked for correlations of the pointing offset with the some metadata properties, we didn't find any signficant correlation. 
+
+**Remarks**: On the next observation night run more data was taken to update the hexapod look-up-table (LUT). 
+The pointing offset precision should be improved considerably after that. 
+
+..  _Pointing-Model-Verification-202203:
+
+AuxTel Pointing Verification 2022/03
+==============================
+
+In this notebook is shown how the data was acquired, the pointing precision timeline, AzEl offsets as a function of the elevation and a correlaiton matrix.
+
+The Dataset
+------------------
+
+Basically, we query the WCS solution from the bulter calibrate task, the
+boresight pointing position and some information from the exposure
+metadata. The sample was queried using the script
+``query_pointing_bluter_reviewed.py``.
+
+The main quantities of this dataset are: - ``RA``, ``DEC`` : pointing
+sky position from the boersight - ``RA_WCS``, ``DEC_WCS`` : pointing sky
+position from the wcs solutions - ``PNT_OFFSET``: angular distance
+between the two pointings.
+
+The other columns are exclusively from the metadata and the end with
+``_MD``: ``RA``,
+``DEC``,\ ``MJD``,\ ``EXPTIME``,\ ``TEMP_SET``,\ ``CCDTEMP``,\ ``FILTER``,\ ``ELSTART``,\ ``ELEND``,\ ``AZSTART``,\ ``AZEND``
+
+The file ``data/rev_checking_auxtel_pointing_{date}.csv`` contains info
+about 1421 exposures taken from Feb 2020 up to Nov 2021. The collection
+used to generate this file was
+``u/mfl/testProcessCcd_srcMatchFull_181e6356``. And it’s from the
+``lsst.rapid.analysis.butlerUtils``.
+
+Caveat: Not all the images from the observation nights. The calibration
+filters exposures selecting preferentially crowded fields.
+
+Loading the data
+------------------
+Each file corresponds to an outputed collection from the rapid analysis pipeline. 
+
+.. code:: ipython3
+
+    import pandas as pd
+    
+    df0 = pd.read_csv('data/rev_checking_auxtel_pointing_24032022.csv',index_col=0)
+    df1 = pd.read_csv('data/rev_checking_auxtel_pointing_Feb2022.csv',index_col=0)
+    df2 = pd.read_csv('data/rev_checking_auxtel_pointing_Mar2022.csv',index_col=0)
+    
+    df = pd.concat([df0,df1,df2])
+    df.DATE = pd.to_datetime(df.DATE)#.dt.date
+
+Pointing Offset Precision
+^^^^^^^^^^^^^^^^^^^^^^
+
+The overall precision considering all the night runs since Feb 2020 is about 1 arcmin. 
+But the pointing precision should have involved greatly since the begining, the pointing model methods are constantly updated to achieve a better precision.
+
+.. code:: ipython3
+
+    df1['PNT_OFFSET'].hist(bins=mybins,label=f'Feb 2020 - Mar 2022',density=False,lw=4)
+    df1['PNT_OFFSET'][sep_up].hist(bins=mybins,label=f'After Sep 2021',density=False, histtype='step',lw=4)
+    
+    plt.axvline(pm,color='gray',ls='--',lw=3, label=r'median = %.2f arcsec'%(pm*60))
+    plt.axvline(pm+s68,color='k',ls='--',lw=3, label=r'$\sigma_{68}$ = %.2f arcsec'%((pm+s68)*60))
+    
+    plt.title(f'AuxTel Observation Runs',fontsize=16)
+    plt.xlabel('Pointing Offset [arcmin]',fontsize=16)
+    plt.legend(fontsize=12)
+    plt.tight_layout()
+    plt.savefig(f'figures/rev_pointing_offset_distribution_{date}.png',facecolor='w',transparent=False,dpi=100)
+
+.. image:: /_static/output_33_0.png
+   :alt: Pointing Distribution
+
+    
+Pointing Offset Precision Timeline
+^^^^^^^^^^^^^^^^^^^^^^
+
+Pointing offset distribution from Feb 2020 up to Mar 2022.
+
+.. code:: ipython3
+
+    fig = plt.figure(figsize=(10,5))
+    sns.stripplot(x=df.month_year, y='PNT_OFFSET', palette="cool", data=df, dodge=True, alpha=.5, zorder=1)
+    ax = sns.pointplot(x=df.month_year, y='PNT_OFFSET', data=df, markers="d", color="black", scale=.75, ci=99, join=False)
+    
+    ax.axhline(10/60,color='k',ls='--',lw=3, label='Pointing Req.\n 10 arcsec')
+    ax.set_ylabel('Pointing Offset [acrmin]')
+    ax.set_xlabel('')
+    ax.set_title('AuxTel Observation Runs')
+    ax.legend(fontsize=12)
+    ax.tick_params(axis='x', rotation=60)
+    fig.tight_layout()
+    fig.savefig(f'figures/pointing_offset_monthly_{date}.png',facecolor='w',transparent=False,dpi=100)
+
+.. image:: /_static/output_24_0.png
+    :name: pointing-timeline
+    :target: ./_images/output_24_0.png
+    :alt: Pointing Timeline
+
+Elevation Offsets
+^^^^^^^^^^^^^^^^^^^^^^
+
+Elevation vs offset on Az/El shows that at the begining of the nights on 2022 there were an initial offset on the hexapod which was not corrected. 
+
+.. code:: ipython3
+
+    # fig = plt.figure(figsize=(10,4))
+    # plt.subplot(1, 2, 1)
+    
+    fig, axs = plt.subplots(1,2, figsize=(8, 4.5), sharey='all')
+    plt.subplots_adjust(wspace=0.)
+    im =axs[0].scatter(df1.dEL[sep_up], df1.EL[sep_up], alpha=0.5, s=50, c=df1.year[sep_up], cmap='cool_r')
+    # plt.scatter(df1.dEL[outliers2], df1.EL[outliers2], s=50, alpha=0.6)
+    axs[0].set_ylabel('Elevation [deg]',fontsize=16)
+    axs[0].set_xlabel('delta(Elevation) [arcmin]',fontsize=16)
+    
+    # axs[0].legend(fontsize=14)
+    # plt.colorbar()#.set_label('PNT_OFFSET [arcmin]',fontsize=14)
+    # plt.title(f'AuxTel Observation Runs',fontsize=16)
+    
+    axs[0].set_xlim(-1.2,1.2)
+    axs[1].set_xlim(-3.,3.)
+    
+    axs[1].scatter(df1.dAZ[sep_up], df1.EL[sep_up], alpha=0.5, s=50,label=f'{len(df1)} Fields', c=df1.year[sep_up], cmap='cool_r')
+    axs[1].set_xlabel('delta(Azimuth) [arcmin]',fontsize=16)
+    
+    plt.draw()
+    p0 = axs[0].get_position().get_points().flatten()
+    p1 = axs[1].get_position().get_points().flatten()
+    ax_cbar = fig.add_axes([p1[2]-0.015, 0.125, 0.025, p1[2]-p0[0]-0.025])
+    fig.colorbar(im, cax=ax_cbar).set_label('Year.month',fontsize=14)
+    fig.subplots_adjust(wspace=0.)
+    fig.suptitle('AuxTel Observation - from Sep 2021 to Mar 2022')
+    fig.savefig(f'figures/elevation_offsets_Sep2021_Mar2022.png',facecolor='w',transparent=False,dpi=100)
+
+.. image:: /_static/output_35_0.png
+    :alt: Elevation Offsets
+
+Correlation With Enviromental Properties
+^^^^^^^^^^^^^^^^^^^^^^
+
+Here we tryed to correlate the pointing offsets with some information of the metadata.
+This time there were no clear correlation with the enviroment properties. 
+Next time would be interesting to look for correlation with seeing and wind speed. 
+
+.. code:: ipython3
+
+    # Compute the correlation matrix
+    df1b = df2.copy()
+    df1b.dEL = np.abs(df1b.dEL)
+    df1b.dDEC = np.abs(df1b.dDEC)
+    
+    df1b.dAZ = np.abs(df1b.dAZ)
+    df1b.dRA = np.abs(df1b.dRA)
+    
+    df_corr = df1b.corr()
+    
+    # Generate a mask for the upper triangle
+    mask = np.triu(np.ones_like(df_corr, dtype=bool))
+    
+    mask = mask[1:, :-1]
+    corr = df_corr.iloc[1:,:-1].copy()
+    
+    # Set up the matplotlib figure
+    f, ax = plt.subplots(figsize=(11, 9))
+    
+    # Generate a custom diverging colormap
+    cmap = sns.diverging_palette(230, 20, as_cmap=True)
+    
+    # Draw the heatmap with the mask and correct aspect ratio
+    sns.heatmap(corr, mask=mask, cmap=cmap, vmax=0.5, vmin=-0.5, center=0,
+                square=True, linewidths=.5, cbar_kws={"shrink": .5})
+    
+    plt.title(f'AuxTel Pointing Investigation - {len(df1)} Fields \n Observation Runs From Feb 2020 up to Nov 2021',fontsize=16)
+    plt.savefig(f'figures/rev_correlation_matrix_{date}.png',facecolor='w',transparent=False,dpi=100)
+
+.. image:: /_static/output_37_0.png
+   :alt: Correlation Matrix
+
+
